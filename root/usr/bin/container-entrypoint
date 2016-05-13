@@ -1,3 +1,26 @@
 #!/bin/bash
 
+set -e
+
+SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+CONFIG_DIR=/var/lib/pgsql/config
+
+if [ -f ${CONFIG_DIR}/mode ]; then
+  MODE=$(cat ${CONFIG_DIR}/mode)
+fi
+export MODE=${MODE:-MASTER}
+
+case "${MODE}" in
+  MASTER)
+    ${SCRIPT_DIR}/run-postgresql-master "$@"
+    ;;
+  SLAVE)
+    ${SCRIPT_DIR}/run-postgresql-slave "$@"
+    ;;
+  *)
+    echo "Invalid MODE, expecting MASTER|SLAVE"
+    exit 1
+    ;;
+esac
+
 exec "$@"
