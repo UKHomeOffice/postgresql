@@ -10,6 +10,7 @@ function get_config() {
   conf_name="${1}"
   conf_file="${CONFIG_DIR}/${conf_name}"
   if [ -f ${conf_file} ]; then
+    echo "Using config from ${conf_file}"
     value="$(cat ${conf_file})"
   else
     value="${!conf_name}"
@@ -19,11 +20,9 @@ function get_config() {
   fi
 }
 
-get_config MODE
-get_config POSTGRESQL_ADMIN_PASSWORD
-get_config POSTGRESQL_USER
-get_config POSTGRESQL_PASSWORD
-get_config POSTGRESQL_DATABASE
+for file in ${CONFIG_DIR}/* ; do
+  get_config $(basename ${file})
+done
 
 # Define any variables if not defined in files:
 export MODE=${MODE:-MASTER}
