@@ -5,9 +5,27 @@ set -e
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 CONFIG_DIR=/var/lib/pgsql/config
 
-if [ -f ${CONFIG_DIR}/mode ]; then
-  MODE=$(cat ${CONFIG_DIR}/mode)
-fi
+function get_config() {
+
+  conf_name="${1}"
+  conf_file="${CONFIG_DIR}/${conf_name}"
+  if [ -f ${conf_file} ]; then
+    value="$(cat ${conf_file})"
+  else
+    value="${!conf_name}"
+  fi
+  if [ ! -z ${value} ]; then
+    eval "export ${conf_name}=${value}"
+  fi
+}
+
+get_config MODE
+get_config POSTGRESQL_ADMIN_PASSWORD
+get_config POSTGRESQL_USER
+get_config POSTGRESQL_PASSWORD
+get_config POSTGRESQL_DATABASE
+
+# Define any variables if not defined in files:
 export MODE=${MODE:-MASTER}
 
 case "${MODE}" in
@@ -22,5 +40,3 @@ case "${MODE}" in
     exit 1
     ;;
 esac
-
-exec "$@"
