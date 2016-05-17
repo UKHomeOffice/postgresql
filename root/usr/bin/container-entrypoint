@@ -20,6 +20,16 @@ function get_config() {
   fi
 }
 
+if [ "$(whoami)" != "${PGUSER}" ]; then
+  echo "Fixing permissions..."
+  /usr/libexec/fix-permissions /var/lib/pgsql
+  echo "Switching user..."
+  su ${PGUSER} --preserve-environment -c "${BASH_SOURCE[0]} $@"
+  exit $?
+else
+  echo "Running as $(whoami)"
+fi
+
 for file in ${CONFIG_DIR}/* ; do
   get_config $(basename ${file})
 done

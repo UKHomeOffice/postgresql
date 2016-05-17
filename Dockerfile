@@ -51,6 +51,4 @@ ENV BASH_ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
 
 VOLUME ["/var/lib/pgsql/data"]
 
-USER 26
-
 ENTRYPOINT ["container-entrypoint"]
